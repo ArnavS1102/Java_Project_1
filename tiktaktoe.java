@@ -2,13 +2,6 @@ package com.biceps;
 
 import java.util.Scanner;
 
-/**
- * You can read more about TicTacToe Java Program Implementation at
- * http://codepumpkin.com/tic-tac-toe/
- *
- * @author codepumpkin.com
- *
- */
 public class tiktaktoe  {
 
     public static void main(String[] args) {
