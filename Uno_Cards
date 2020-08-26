@@ -1,0 +1,66 @@
+class Card {                                        //a class for the card.        
+    private String facename;                        //facename here indicates the value that the card will have like 2 or reverse etc. 
+    private String suit;                            //suit here is the type of the card. Uno has 4 types which are red,yellow,green and blue.
+    public Card(String facename,String suit)        //Constructor for the card
+    {
+        setFaceName(facename);                     //setter method called(setter and getter can be used to handle private attributes)
+        setSuit(suit);
+    }
+    public String getFaceName(String facename)     //getter method to get the facename of the card
+    {
+        return facename;
+    }
+    public String getSuit(String suit)            //getter method to get the suit of the card
+    {
+        return suit;
+    }
+    public void setFaceName(String facename)     //setter method to set the private attribute facename
+    {
+        this.facename=facename;
+    }
+    public void setSuit(String suit)             //setter method to set the private attribute suit
+    {
+        this.suit=suit;
+    }
+    public String printstring()                  //method to display the facename and the suit of the card
+    {
+        return facename + " of " + suit;
+    }
+}
+class Deck{                                     //UNO is played with a deck of cards so a class which handles the deck portion is necessary.
+    private Card[] deck;                        //deck is an array like structure will store instances of Card(can be compared to a real life deck of cards)
+    public Deck()                                //Constructor for deck
+    {
+        String[] faces={"0","1","2","3","4","5","6","7","8","9","Reverse","Skip","Add 2"};           //These are all the faces of  UNO set.
+        String[] colors={"Red","Yellow","Green","Blue"};                                             //All 4 colors of UNO set.
+        deck=new Card[52]; 
+        for(int color=0;color<4;color++)                                                             //This for loop is to assign a particular facename and a suit 
+        {                                                                                            //to each card present in the deck
+            for(int face_no=0;face_no<13;face_no++)
+            {
+                deck[face_no+(color*13)]=new Card(faces[face_no],colors[color]);                     //the Card constructor is called which will do the job of assigning
+            }
+        }
+    }
+    public void display()                                                                            //This method will display the entire deck of cards 
+    {                                                                                                //This method is for testing purpose 
+        for(Card card: deck)
+        {
+            System.out.println(card.printstring());                                                   //For printing an individual card's facename and value,printString method called
+                                                                                                       // which belongs to the Card class
+
+        }
+    }
+    
+
+
+    
+
+}
+class Main  {
+    public static void main(String[] args)
+    {
+        Deck thedeck=new Deck();
+        thedeck.display();
+    }
+}
