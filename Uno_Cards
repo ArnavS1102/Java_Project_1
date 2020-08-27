@@ -27,7 +27,7 @@ class Card {                                        //a class for the card.
         return facename + " of " + suit;
     }
 }
-class Deck{                                     //UNO is played with a deck of cards so a class which handles the deck portion is necessary.
+class Deck extends Card{                                     //UNO is played with a deck of cards so a class which handles the deck portion is necessary.
     private Card[] deck;                        //deck is an array like structure will store instances of Card(can be compared to a real life deck of cards)
     public Deck()                                //Constructor for deck
     {
