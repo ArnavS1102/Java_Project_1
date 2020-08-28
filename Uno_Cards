@@ -27,18 +27,19 @@ class Card {                                        //a class for the card.
         return facename + " of " + suit;
     }
 }
-class Deck extends Card{                                     //UNO is played with a deck of cards so a class which handles the deck portion is necessary.
+class Deck
+{                                     //UNO is played with a deck of cards so a class which handles the deck portion is necessary.
     private Card[] deck;                        //deck is an array like structure will store instances of Card(can be compared to a real life deck of cards)
     public Deck()                                //Constructor for deck
     {
-        String[] faces={"0","1","2","3","4","5","6","7","8","9","Reverse","Skip","Add 2"};           //These are all the faces of  UNO set.
+        String[] faces={"0","1","2","3","4","5","6","7","8","9","Reverse","Skip","Add 2","Add 4"};           //These are all the faces of  UNO set.
         String[] colors={"Red","Yellow","Green","Blue"};                                             //All 4 colors of UNO set.
         deck=new Card[52]; 
         for(int color=0;color<4;color++)                                                             //This for loop is to assign a particular facename and a suit 
         {                                                                                            //to each card present in the deck
-            for(int face_no=0;face_no<13;face_no++)
+            for(int face_no=0;face_no<14;face_no++)
             {
-                deck[face_no+(color*13)]=new Card(faces[face_no],colors[color]);                     //the Card constructor is called which will do the job of assigning
+                deck[face_no+(color*14)]=new Card(faces[face_no],colors[color]);                     //the Card constructor is called which will do the job of assigning
             }
         }
     }
