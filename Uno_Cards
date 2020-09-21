@@ -27,36 +27,198 @@ class Card {                                        //a class for the card.
         return facename + " of " + suit;
     }
 }
-class Deck
-{                                     //UNO is played with a deck of cards so a class which handles the deck portion is necessary.
-    private Card[] deck;                        //deck is an array like structure will store instances of Card(can be compared to a real life deck of cards)
-    public Deck()                                //Constructor for deck
+import java.util.Random;
+
+public class Deck {
+    private Card[] deck;
+    int current_card;
+    private int cardno;
+    public Deck()
     {
-        String[] faces={"0","1","2","3","4","5","6","7","8","9","Reverse","Skip","Add 2","Add 4"};           //These are all the faces of  UNO set.
-        String[] colors={"Red","Yellow","Green","Blue"};                                             //All 4 colors of UNO set.
-        deck=new Card[52]; 
-        for(int color=0;color<4;color++)                                                             //This for loop is to assign a particular facename and a suit 
-        {                                                                                            //to each card present in the deck
-            for(int face_no=0;face_no<14;face_no++)
+        String[] faces={"0","1","2","3","4","5","6","7","8","9","Reverse","Skip","draw 2","draw 4","wild"};
+        String[] colors={"Red","Yellow","Green","Blue"};
+        cardno=0;
+        deck=new Card[60];
+
+        for(int color=0;color<4;color++)
+        {
+            for(int face_no=0;face_no<15;face_no++)
             {
-                deck[face_no+(color*14)]=new Card(faces[face_no],colors[color]);                     //the Card constructor is called which will do the job of assigning
+                deck[cardno]=new Card(faces[face_no],colors[color]);
+                cardno++;
+
             }
         }
     }
-    public void display()                                                                            //This method will display the entire deck of cards 
-    {                                                                                                //This method is for testing purpose 
+    public void display()
+    {
         for(Card card: deck)
         {
-            System.out.println(card.printstring());                                                   //For printing an individual card's facename and value,printString method called
-                                                                                                       // which belongs to the Card class
+            System.out.println(card.printstring());
 
         }
     }
+    public void shuffle()
+    {
+        int no=deck.length;
+        Random random=new Random();
+        for(int i=0;i<deck.length;i++)
+        {
+            int random_index=i+random.nextInt(60-i);
+            Card temp=deck[random_index];
+            deck[random_index]=deck[i];
+            deck[i]=temp;
+
+        }
+
+
+
+    }
+    public Card drawCard()
+    {
+        if(cardno==0)
+        {
+            System.out.println("No more cards left");
+            System.exit(0);
+        }
+        return deck[--cardno];
+    }
+    public Card[] drawCard(int n)
+    {
+        if(n<0)
+        {
+            System.out.println("Number of cards drawn cannot be less than 0");
+            System.exit(0);
+        }
+        else if(n>cardno)
+        {
+            System.out.println("Number of cards drawn cannot be more than the number of cards present in deck");
+            System.exit(0);
+        }
+        Card[] drawncards=new Card[n];
+        for(int i=0;i<n;i++)
+        {
+            drawncards[i]=deck[--cardno];
+        }
+        return drawncards;
+    }
+
+
+    public static void main(String[] args)
+    {
+        Deck thedeck=new Deck();
+        thedeck.display();
+
+
+    }
+
+}
+
     
 
 
     
+import java.util.ArrayList;
+import java.util.Arrays;
 
+public class Game{
+    private int current_player;
+    private String[] player_indices;
+    private Deck deck;
+    private ArrayList<ArrayList<Card>> player_hand;
+    private ArrayList<Card> Buffer;
+    boolean rotation;
+    public Game(String[] player_string)
+    {
+        deck=new Deck();
+        deck.shuffle();
+        Buffer=new ArrayList<Card>();
+        current_player=0;
+        rotation=false;
+        player_indices=player_string;
+        player_hand=new ArrayList<ArrayList<Card>> ();
+        for(int i=0;i<player_string.length;i++)
+        {
+            ArrayList<Card> current_playerhand=new ArrayList<Card>(Arrays.asList(deck.drawCard(7)));
+            player_hand.add(current_playerhand);
+        }
+
+
+    }
+    public void start_game(Game game)
+    {
+
+        Card card_drawn=deck.drawCard();
+        if(card_drawn.getFaceName(card_drawn)=="draw 2")
+        {
+            start_game(game);
+
+        }
+        else if(card_drawn.getFaceName(card_drawn)=="draw 4")
+        {
+            start_game(game);
+        }
+        else if(card_drawn.getFaceName(card_drawn)=="wild")
+        {
+            start_game(game);
+
+        }
+        else if(card_drawn.getFaceName(card_drawn)=="reverse")
+        {
+            System.out.println("The rotation of the game has been reversed");
+            rotation^=true;
+            current_player=player_indices.length-1;
+
+
+
+        }
+        else if(card_drawn.getFaceName(card_drawn)=="skip")
+        {
+            System.out.println("The current player's turn has been fixed");
+            if(rotation==true)
+            {
+                current_player=(current_player+1)%player_indices.length;
+
+            }
+            else
+            {
+                current_player=(current_player-1)%player_indices.length;
+
+            }
+
+        }
+        Buffer.add(card_drawn);
+    }
+    public boolean game_over()
+    {
+        for(String player: player_indices)
+        {
+            if(emptyhand(player))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean emptyhand(String x)
+    {
+        return get_playerhand(x).isEmpty();
+    }
+    public ArrayList<Card> get_playerhand(String y)
+    {
+        int indice=Arrays.asList(player_indices).indexOf(y);
+        return player_hand.get(indice);
+    }
+    public int get_playerhand_size(String z)
+    {
+        return get_playerhand(z).size();
+    }
+
+
+
+
+
+}
 }
 class Main  {
     public static void main(String[] args)
