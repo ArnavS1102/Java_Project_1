@@ -1,16 +1,25 @@
-class Card {                                        //a class for the card.        
-    private String facename;                        //facename here indicates the value that the card will have like 2 or reverse etc. 
+public class Card {
+
+    private String facename;                        //facename here indicates the value that the card will have like 2 or reverse etc.
     private String suit;                            //suit here is the type of the card. Uno has 4 types which are red,yellow,green and blue.
     public Card(String facename,String suit)        //Constructor for the card
     {
         setFaceName(facename);                     //setter method called(setter and getter can be used to handle private attributes)
         setSuit(suit);
     }
-    public String getFaceName(String facename)     //getter method to get the facename of the card
+    public String getFaceName(Card card)     //getter method to get the facename of the card
+    {
+        return card.facename;
+    }
+    public String getSuit(Card card)            //getter method to get the suit of the card
+    {
+        return card.suit;
+    }
+    public String getFacename(String facename)
     {
         return facename;
     }
-    public String getSuit(String suit)            //getter method to get the suit of the card
+    public String getSuit(String suit)
     {
         return suit;
     }
@@ -27,6 +36,8 @@ class Card {                                        //a class for the card.
         return facename + " of " + suit;
     }
 }
+
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Deck {
@@ -35,14 +46,14 @@ public class Deck {
     private int cardno;
     public Deck()
     {
-        String[] faces={"0","1","2","3","4","5","6","7","8","9","Reverse","Skip","draw 2","draw 4","wild"};
+        String[] faces={"0","1","2","3","4","5","6","7","8","9","Reverse","Skip","draw 2","draw 4"};
         String[] colors={"Red","Yellow","Green","Blue"};
         cardno=0;
-        deck=new Card[60];
+        deck=new Card[56];
 
         for(int color=0;color<4;color++)
         {
-            for(int face_no=0;face_no<15;face_no++)
+            for(int face_no=0;face_no<14;face_no++)
             {
                 deck[cardno]=new Card(faces[face_no],colors[color]);
                 cardno++;
@@ -64,7 +75,7 @@ public class Deck {
         Random random=new Random();
         for(int i=0;i<deck.length;i++)
         {
-            int random_index=i+random.nextInt(60-i);
+            int random_index=i+random.nextInt(56-i);
             Card temp=deck[random_index];
             deck[random_index]=deck[i];
             deck[i]=temp;
@@ -102,6 +113,16 @@ public class Deck {
         }
         return drawncards;
     }
+    public boolean isEmpty()
+    {
+        return deck.length==0;
+    }
+    public void replace_deck_with(ArrayList<Card> cards_replacement)
+    {
+        deck=cards_replacement.toArray(new Card[cards_replacement.size()]);
+        cardno=cards_replacement.size();
+    }
+
 
 
     public static void main(String[] args)
@@ -114,10 +135,6 @@ public class Deck {
 
 }
 
-    
-
-
-    
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -128,6 +145,8 @@ public class Game{
     private ArrayList<ArrayList<Card>> player_hand;
     private ArrayList<Card> Buffer;
     boolean rotation;
+    String curr_facename;
+    String curr_suit;
     public Game(String[] player_string)
     {
         deck=new Deck();
@@ -149,6 +168,8 @@ public class Game{
     {
 
         Card card_drawn=deck.drawCard();
+        curr_facename = card_drawn.getFaceName(card_drawn);
+        curr_suit = card_drawn.getSuit(card_drawn);
         if(card_drawn.getFaceName(card_drawn)=="draw 2")
         {
             start_game(game);
@@ -213,13 +234,124 @@ public class Game{
     {
         return get_playerhand(z).size();
     }
+    public String get_currentplayer()
+    {
+        return player_indices[current_player];
+    }
+    public String get_previousplayer()
+    {
+        int prev_idx=current_player-1;
+        if(prev_idx==-1)
+        {
+            prev_idx=player_indices.length-1;
+
+        }
+        return player_indices[prev_idx];
+    }
+    public Card get_playercard(String player_id,int choice)
+    {
+        ArrayList<Card> temp= get_playerhand(player_id);
+        return temp.get(choice);
+    }
+    public boolean is_valid_move(Card card)
+    {
+        return card.getFaceName(card)==curr_facename || card.getSuit(card)==curr_suit;
+
+    }
+    public boolean is_player_turn(String curr_player_id)
+    {
+        return player_indices[current_player]==curr_player_id;
+    }
+
+    public void final_draw(String id_player)
+    {
+        if(is_player_turn(id_player))
+        {
+            if(deck.isEmpty())
+            {
+                deck.replace_deck_with(Buffer);
+                deck.shuffle();
+
+
+            }
+            get_playerhand(id_player).add(deck.drawCard());
+            if(rotation==false)
+            {
+                current_player=(current_player+1) % player_indices.length;
+            }
+            else if(rotation==true)
+            {
+                current_player=(current_player-1) % player_indices.length;
+                if(current_player==-1)
+                {
+                    current_player=player_indices.length-1;
+                }
+            }
+        }
+
+
+    }
+    public void played_card(String identity,Card card,String suit_card)
+    {
+        ArrayList<Card> curr_identity_hand=get_playerhand(identity);
+        if(is_player_turn(identity))
+        {
+            if(!is_valid_move(card))
+            {
+                System.out.println("The card played isn't valid");
+
+            }
+            else
+            {
+                curr_identity_hand.remove(card);
+            }
+
+        }
+        if(emptyhand(identity))
+        {
+            System.out.println(identity + "HAS WON");
+
+        }
+
+        curr_facename=card.getFaceName(card);
+        curr_suit=card.getSuit(card);
+        Buffer.add(card);
+        if(rotation==false)
+        {
+            current_player=(current_player+1) % player_indices.length;
+        }
+        else
+        {
+            current_player=(current_player-1) % player_indices.length;
+            if(current_player==-1)
+            {
+                current_player=player_indices.length-1;
+            }
+        }
+        if(card.getFaceName(card)=="draw 2")
+        {
+            
+        }
+
+    }
+
+
+
+
+
 
 
 
 
 
 }
-}
+
+
+    
+
+
+    
+
 class Main  {
     public static void main(String[] args)
     {
