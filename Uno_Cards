@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Arrays;
 public class Card {
 
     private String facename;                        //facename here indicates the value that the card will have like 2 or reverse etc.
@@ -39,15 +43,10 @@ public class Card {
 
 }
 
-
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
-
 public class Deck {
     private Card[] deck;
     int current_card;
-    private static int cardno;
+    public int cardno;
     private int top;
 
     public Deck()
@@ -67,9 +66,8 @@ public class Deck {
 
             }
         }
-        System.out.println(deck.length);
-        System.out.println(deck[3].printstring());
-        top=deck.length-1;
+
+        top=cardno-1;
 
 
     }
@@ -85,17 +83,16 @@ public class Deck {
 
         }
     }
-    public void shuffle()
+    public void shuffle(int no_cards)
     {
-        int no=deck.length;
+        int no=no_cards;
         Random random=new Random();
-        for(int i=0;i<deck.length;i++)
+        for(int i=0;i<no_cards;i++)
         {
-            int random_index=i+random.nextInt(56-i);
+            int random_index=i+random.nextInt(no-i);
             Card temp=deck[random_index];
             deck[random_index]=deck[i];
             deck[i]=temp;
-
         }
 
 
@@ -108,9 +105,7 @@ public class Deck {
             System.out.println("No more cards left");
             System.exit(0);
         }
-
-        System.out.println(top);
-
+        cardno=cardno-1;
         return deck[--top];
     }
     /*public Card[] drawCard(int n)
@@ -153,15 +148,15 @@ public class Deck {
     {
         Scanner sc=new Scanner(System.in);
         Deck thedeck=new Deck();
-        System.out.println(cardno);
-        thedeck.shuffle();
+        thedeck.shuffle(56);
         int no_players;
         System.out.println("Enter the number of players");
         no_players=sc.nextInt();
         String[] player_names = new String[no_players+14];
-        for(int i=1;i<=no_players;i++)
+        for(int i=0;i<no_players;i++)
         {
-            System.out.println("Enter player "+ i +"'s name");
+            int temp_i=i+1;
+            System.out.println("Enter player "+ temp_i +"'s name");
             player_names[i]=sc.next();
         }
         Game uno_game=new Game(player_names,no_players);
@@ -170,6 +165,7 @@ public class Deck {
         ArrayList<Card> temp_player_id_hand;
         while(!uno_game.game_over())
         {
+            System.out.println(uno_game.current_player);
             String player_id=uno_game.get_currentplayer();
             temp_player_id_hand=uno_game.get_playerhand(player_id);
             System.out.println("Player " +player_id + " your hand is :");
@@ -181,16 +177,37 @@ public class Deck {
             if(sc.nextInt()==0)
             {
                 uno_game.final_draw(player_id);
+                System.out.println("The card on the top of the buffer is:");
+                System.out.println(uno_game.Buffer.get(uno_game.Buffer.size()-1).printstring());
+
                 continue;
             }
             else
             {
-                System.out.println("Enter the index of the card you'd like to play");
-                int temp1=sc.nextInt();
-                Card temp_playercard=temp_player_id_hand.get(temp1-1);
-                String str_suit=temp_playercard.getSuit(temp_playercard);
-                uno_game.played_card(player_id,temp_playercard,str_suit);
+                int flag=0;
+                while(flag==0)
+                {
+                    System.out.println("Enter the index of the card you'd like to play");
+                    int temp1 = sc.nextInt();
+                    Card temp_playercard = temp_player_id_hand.get(temp1 - 1);
+                    String str_suit = temp_playercard.getSuit(temp_playercard);
+                    String str_facename=temp_playercard.getFaceName(temp_playercard);
+                    if(uno_game.Buffer.get(uno_game.Buffer.size()-1).getSuit(uno_game.Buffer.get(uno_game.Buffer.size()-1))!=str_suit && uno_game.Buffer.get(uno_game.Buffer.size()-1).getFaceName(uno_game.Buffer.get(uno_game.Buffer.size()-1))!=str_facename)
+                    {
+                        System.out.println("The card played isn't valid. Select again");
+                        System.out.println(uno_game.Buffer.get(uno_game.Buffer.size()-1).printstring());
+                        continue;
+                    }
+                    else
+                    {
+                        flag=1;
+                        uno_game.played_card(player_id, temp_playercard, str_suit);
+
+                    }
+                }
             }
+
+
 
 
 
@@ -208,15 +225,15 @@ public class Deck {
 }
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
+
+
 
 public class Game{
-    private int current_player;
+    public int current_player;
     private String[] player_indices;
     private Deck deck;
     private ArrayList<ArrayList<Card>> player_hand;
-    private ArrayList<Card> Buffer;
+    public ArrayList<Card> Buffer;
     private int players_playing;
     boolean rotation;
     String curr_facename;
@@ -224,7 +241,7 @@ public class Game{
     public Game(String[] player_string,int no_players)
     {
         deck=new Deck();
-        deck.shuffle();
+        deck.shuffle(deck.cardno);
         Buffer=new ArrayList<Card>();
         current_player=0;
         rotation=false;
@@ -246,8 +263,12 @@ public class Game{
     }
     public void start_game(Game game)
     {
-        deck.shuffle();
+        deck.shuffle(deck.cardno);
         Card card_drawn=deck.drawCard();
+        Buffer.add(card_drawn);
+        System.out.println("The first card drawn is:");
+        System.out.println(Buffer.get(Buffer.size()-1).printstring());
+        System.out.println(card_drawn.printstring());
         curr_facename = card_drawn.getFaceName(card_drawn);
         curr_suit = card_drawn.getSuit(card_drawn);
         if(card_drawn.getFaceName(card_drawn)=="draw 2")
@@ -264,23 +285,32 @@ public class Game{
             System.out.println("The rotation of the game has been reversed");
             rotation^=true;
             current_player=player_indices.length-1;
+
         }
         else if(card_drawn.getFaceName(card_drawn)=="skip")
         {
             System.out.println("The current player's turn has been fixed");
             if(rotation==true)
             {
-                current_player=(current_player+1)%player_indices.length;
+                current_player=(current_player+1)%(player_indices.length);
+                if(current_player==player_indices.length)
+                {
+                    current_player=0;
+                }
             }
             else
             {
-                current_player=(current_player-1)%player_indices.length;
+                current_player=(current_player-1)%(player_indices.length);
+                if(current_player==-1)
+                {
+                    current_player=(player_indices.length)-1;
+                }
             }
 
         }
-        System.out.println("The first card drawn is");
+        /*System.out.println("The first card drawn is");
         System.out.println(card_drawn.printstring());
-        Buffer.add(card_drawn);
+        Buffer.add(card_drawn);*/
 
 
     }
@@ -341,6 +371,10 @@ public class Game{
     }
     public boolean is_valid_move(Card card)
     {
+        Card temp_card1;
+        temp_card1=Buffer.get(Buffer.size()-1);
+        curr_suit= temp_card1.getSuit(temp_card1);
+        curr_facename= temp_card1.getFaceName(temp_card1);
         return card.getFaceName(card)==curr_facename || card.getSuit(card)==curr_suit;
 
     }
@@ -356,21 +390,21 @@ public class Game{
             if(deck.isEmpty())
             {
                 deck.replace_deck_with(Buffer);
-                deck.shuffle();
+                deck.shuffle(deck.cardno);
 
 
             }
             get_playerhand(id_player).add(deck.drawCard());
             if(rotation==false)
             {
-                current_player=(current_player+1) % player_indices.length;
+                current_player=(current_player+1) % (player_indices.length);
             }
             else if(rotation==true)
             {
-                current_player=(current_player-1) % player_indices.length;
+                current_player=(current_player-1) % (player_indices.length);
                 if(current_player==-1)
                 {
-                    current_player=player_indices.length-1;
+                    current_player=(player_indices.length)-1;
                 }
             }
         }
@@ -382,35 +416,33 @@ public class Game{
         ArrayList<Card> curr_identity_hand=get_playerhand(identity);
         if(is_player_turn(identity))
         {
-            if(!is_valid_move(card))
+            curr_identity_hand.remove(card);
+            if(emptyhand(identity))
             {
-                System.out.println("The card played isn't valid");
+                System.out.println(identity + "HAS WON");
 
             }
-            else
-            {
-                curr_identity_hand.remove(card);
-                if(emptyhand(identity))
-                {
-                    System.out.println(identity + "HAS WON");
-
-                }
-                curr_facename=card.getFaceName(card);
-                curr_suit=card.getSuit(card);
-                Buffer.add(card);
-            }
+            curr_facename=card.getFaceName(card);
+            curr_suit=card.getSuit(card);
+            Buffer.add(card);
+            System.out.println("The card on the top of the buffer is:");
+            System.out.println(card.printstring());
 
         }
         if(rotation==false)
         {
-            current_player=(current_player+1) % player_indices.length;
+            current_player=(current_player+1) % (player_indices.length);
+            if(current_player==players_playing)
+            {
+                current_player=0;
+            }
         }
         else
         {
-            current_player=(current_player-1) % player_indices.length;
+            current_player=(current_player-1) % (player_indices.length);
             if(current_player==-1)
             {
-                current_player=player_indices.length-1;
+                current_player=(player_indices.length)-1;
             }
         }
         if(card.getFaceName(card)=="draw 2")
@@ -439,6 +471,10 @@ public class Game{
             if(rotation==false)
             {
                 current_player=(current_player+1)%player_indices.length;
+                if(current_player==player_indices.length)
+                {
+                    current_player=0;
+                }
             }
             else
             {
@@ -467,12 +503,20 @@ public class Game{
             }
 
         }
+        /*if(rotation==false && current_player==players_playing-1)
+        {
+            current_player=0;
+        }
+        else if(rotation==true && current_player==0)
+        {
+            current_player=players_playing-1;
+        }*/
+
 
 
     }
 
 }
-
 
 
 
