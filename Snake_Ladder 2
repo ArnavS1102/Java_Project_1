@@ -1,0 +1,197 @@
+import java.util.Random;
+import java.util.Scanner;
+public class Snake {
+    private int start_index;
+    private int end_index;
+    public int[] snake_head_array={96,94,52,25,95,31};
+    public int[] snake_tail_array={54,21,37,16,8,27};
+    public Snake(int x,int y)
+    {
+        this.start_index=x;
+        this.end_index=y;
+    }
+    public Snake()
+    {
+        System.out.println("Snakes have been created");
+    }
+    public int checkifsnake(int x,String xy)
+    {
+        for(int i=0;i<6;i++)
+        {
+            if (x == snake_head_array[i])
+            {
+                x = snake_tail_array[i];
+                System.out.println(xy+ " HAS FALLEN DOWN TO " +x);
+                break;
+
+            }
+        }
+        return x;
+    }
+
+
+
+}
+public class Ladder {
+    private int start_ladder_index;
+    private int end_ladder_index;
+    public int[] ladder_head_array={93,85,69,46,29,13};
+    public int[] ladder_tail_array={34,78,44,2,11,7};
+    public Ladder(int x,int y)
+    {
+        this.start_ladder_index=x;
+        this.end_ladder_index=y;
+    }
+    public Ladder()
+    {
+        System.out.println("Ladders have been created");
+    }
+    public int checkifladder(int y,String yx)
+    {
+        for(int i=0;i<6;i++)
+        {
+            if(y==ladder_tail_array[i])
+            {
+                y=ladder_head_array[i];
+                System.out.println(yx+" HAS CLIMED UP TO "+y);
+                break;
+            }
+        }
+        return y;
+    }
+
+}
+public class Player {
+    public int current_index;
+    private String id;
+    public Player(String player_id)
+    {
+        this.current_index=1;
+        this.id=player_id;
+    }
+    public String getid(Player x)
+    {
+        return x.id;
+    }
+
+
+}
+import java.util.Random;
+import java.util.Scanner;
+
+public class Game {
+    public Player player_1;
+    public Player player_2;
+    public int current_player_with_die=1;
+    public Game(Player x,Player y)
+    {
+        player_1=x;
+        player_2=y;
+        int game_grid[][]=new int[100][100];
+        for(int i=0;i<10;i++)
+        {
+            for(int j=0;j<10;j++)
+            {
+                game_grid[i][j]=10*i+(j+1);
+            }
+        }
+
+
+    }
+    public boolean isOver()
+    {
+        if(player_1.current_index==100 || player_2.current_index==100)
+        {
+            return true;
+        }
+        return false;
+
+
+
+    }
+    public int get_curr_playerwithdie()
+    {
+        return current_player_with_die;
+    }
+
+    public String player_won()
+    {
+        String temp_name=null;
+        if(player_1.current_index==100)
+        {
+            temp_name=player_1.getid(player_1);
+        }
+        else if(player_2.current_index==100)
+        {
+            temp_name=player_2.getid(player_2);
+        }
+        return temp_name;
+
+    }
+
+
+    public static void main(String[] args)
+    {
+        Scanner sc=new Scanner(System.in);
+        Random rand=new Random();
+        Snake s=new Snake();
+        Ladder l=new Ladder();
+        Player player_with_dice;
+        System.out.println("Enter player_1's name:");
+        Player player1=new Player(sc.next());
+        System.out.println("Enter player_2's name:");
+        Player player2=new Player(sc.next());
+        Game snake_ladder=new Game(player1,player2);
+        while(!snake_ladder.isOver())
+        {
+            if(snake_ladder.get_curr_playerwithdie()==1)
+            {
+                player_with_dice=player1;
+                System.out.println("player 1's turn: ");
+                int turn_value_1=rand.nextInt(6)+1;
+                System.out.println("Enter 1 to roll");
+                sc.nextInt();
+                System.out.println("Dice display: " + turn_value_1);
+                player1.current_index+=turn_value_1;
+                System.out.println("player1's current position is: " +player1.current_index);
+                if(turn_value_1==6)
+                {
+                    System.out.println("Enter 1 to roll");
+                    sc.nextInt();
+                    turn_value_1=rand.nextInt(6)+1;
+                    player1.current_index+=turn_value_1;
+                    System.out.println("player1's current position is: " +player1.current_index);
+                }
+                player1.current_index=s.checkifsnake(player1.current_index,player1.getid(player1));
+                player1.current_index=l.checkifladder(player1.current_index,player1.getid(player1));
+                snake_ladder.current_player_with_die=0;
+            }
+            else if(snake_ladder.get_curr_playerwithdie()==0)
+            {
+                player_with_dice=player2;
+                System.out.println("player 2's turn: ");
+                int turn_value_2=rand.nextInt(6)+1;
+                System.out.println("Enter 1 to roll");
+                sc.nextInt();
+                System.out.println("Dice display: " + turn_value_2);
+                player2.current_index+=turn_value_2;
+                System.out.println("player2's current position is: " +player2.current_index);
+                if(turn_value_2==6)
+                {
+                    System.out.println("Enter 1 to roll");
+                    sc.nextInt();
+                    turn_value_2=rand.nextInt(6)+1;
+                    player2.current_index+=turn_value_2;
+                    System.out.println("player2's current position is: " +player2.current_index);
+                }
+                player2.current_index=s.checkifsnake(player2.current_index,player2.getid(player2));
+                player2.current_index=l.checkifladder(player2.current_index,player2.getid(player2));
+                snake_ladder.current_player_with_die=1;
+            }
+
+
+        }
+        System.out.println(snake_ladder.player_won()+"HAS WON THE GAME");
+    }
+
+}
