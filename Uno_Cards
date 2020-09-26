@@ -391,6 +391,7 @@ public class Game{
             {
                 deck.replace_deck_with(Buffer);
                 deck.shuffle(deck.cardno);
+                Buffer.add(deck.drawCard());
 
 
             }
