@@ -84,14 +84,7 @@ public class Game {
     {
         player_1=x;
         player_2=y;
-        int game_grid[][]=new int[100][100];
-        for(int i=0;i<10;i++)
-        {
-            for(int j=0;j<10;j++)
-            {
-                game_grid[i][j]=10*i+(j+1);
-            }
-        }
+        
 
 
     }
