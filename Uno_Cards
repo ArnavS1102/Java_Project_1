@@ -4,18 +4,19 @@ import java.util.Scanner;
 import java.util.Arrays;
 public class Card {
 
-    private String facename;                        //facename here indicates the value that the card will have like 2 or reverse etc.
-    private String suit;                            //suit here is the type of the card. Uno has 4 types which are red,yellow,green and blue.
-    public Card(String facename,String suit)        //Constructor for the card
+    private String facename;                        
+    private String suit;                           
+    public Card(String facename,String suit)       
     {
-        setFaceName(facename);                     //setter method called(setter and getter can be used to handle private attributes)
+        setFaceName(facename);                   
         setSuit(suit);
     }
-    public String getFaceName(Card card)     //getter method to get the facename of the card
+    public String getFaceName(Card card)  
     {
+    
         return card.facename;
     }
-    public String getSuit(Card card)            //getter method to get the suit of the card
+    public String getSuit(Card card)           
     {
         return card.suit;
     }
@@ -27,15 +28,15 @@ public class Card {
     {
         return suit;
     }
-    public void setFaceName(String facename)     //setter method to set the private attribute facename
+    public void setFaceName(String facename)     
     {
         this.facename=facename;
     }
-    public void setSuit(String suit)             //setter method to set the private attribute suit
+    public void setSuit(String suit)            
     {
         this.suit=suit;
     }
-    public String printstring()                  //method to display the facename and the suit of the card
+    public String printstring()                 
     {
         return facename + " of " + suit;
     }
@@ -108,29 +109,7 @@ public class Deck {
         cardno=cardno-1;
         return deck[--top];
     }
-    /*public Card[] drawCard(int n)
-    {
-        if(n<0)
-        {
-            throw new IllegalArgumentException("Number of cards drawn cannot be less than 0");
-
-        }
-        else if(n>cardno)
-        {
-            System.out.println("Number of cards drawn cannot be more than the number of cards present in deck");
-
-        }
-
-        Card[] drawncards=new Card[n];
-        int temp_no;
-        for(int i=0;i<n;i++)
-        {
-            temp_no=cardno+1;
-            drawncards[i]=deck[temp_no];
-            cardno=cardno-1;
-        }
-        return drawncards;
-    }*/
+  
 
     public boolean isEmpty()
     {
@@ -308,11 +287,7 @@ public class Game{
             }
 
         }
-        /*System.out.println("The first card drawn is");
-        System.out.println(card_drawn.printstring());
-        Buffer.add(card_drawn);*/
-
-
+       
     }
     public boolean game_over()
     {
