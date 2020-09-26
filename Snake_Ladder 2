@@ -76,9 +76,6 @@ public class Player {
 
 
 }
-import java.util.Random;
-import java.util.Scanner;
-
 public class Game {
     public Player player_1;
     public Player player_2;
