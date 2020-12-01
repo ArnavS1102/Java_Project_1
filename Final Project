@@ -2,6 +2,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.io.FileWriter;
 class snakeandladder implements Runnable {
     Thread t;
     snakeandladder()
@@ -154,6 +155,8 @@ class snakeandladder implements Runnable {
                     if(player1.current_index>100)
                     {
                         player1.current_index-=turn_value_1;
+                        snake_ladder.current_player_with_die = 0;
+                        continue;
                     }
                     System.out.println("player1's current position is: " + player1.current_index);
                     if (turn_value_1 == 6) {
@@ -161,6 +164,12 @@ class snakeandladder implements Runnable {
                         sc.nextInt();
                         turn_value_1 = rand.nextInt(6) + 1;
                         player1.current_index += turn_value_1;
+                        if(player1.current_index>100)
+                        {
+                            player1.current_index-=turn_value_1;
+                            snake_ladder.current_player_with_die = 0;
+                            continue;
+                        }
                         System.out.println("player1's current position is: " + player1.current_index);
                     }
                     player1.current_index = s.checkifsnake(player1.current_index, player1.getid(player1));
@@ -177,6 +186,8 @@ class snakeandladder implements Runnable {
                     if(player2.current_index>100)
                     {
                         player2.current_index-=turn_value_2;
+                        snake_ladder.current_player_with_die = 1;
+                        continue;
                     }
                     System.out.println("player2's current position is: " + player2.current_index);
                     if (turn_value_2 == 6) {
@@ -184,6 +195,12 @@ class snakeandladder implements Runnable {
                         sc.nextInt();
                         turn_value_2 = rand.nextInt(6) + 1;
                         player2.current_index += turn_value_2;
+                        if(player2.current_index>100)
+                        {
+                            player2.current_index-=turn_value_2;
+                            snake_ladder.current_player_with_die = 1;
+                            continue;
+                        }
                         System.out.println("player2's current position is: " + player2.current_index);
                     }
                     player2.current_index = s.checkifsnake(player2.current_index, player2.getid(player2));
@@ -193,7 +210,16 @@ class snakeandladder implements Runnable {
 
 
             }
+
             System.out.println(snake_ladder.player_won() + " HAS WON THE GAME");
+            try{
+                FileWriter fws=new FileWriter("C:\\Users\\Admin\\Desktop\\project_3.txt",true);
+                fws.write(snake_ladder.player_won()+ " HAS WON SNAKE AND LADDER GAME");
+                fws.close();
+            }catch(Exception e)
+            {
+                System.out.println("Exception caught");
+            }
             Thread.sleep(500);
         }
         catch(Exception e)
@@ -207,6 +233,8 @@ class snakeandladder implements Runnable {
 
 
 }
+
+
 public class unocards implements Runnable {
     Thread t;
     unocards()
@@ -512,7 +540,15 @@ public class unocards implements Runnable {
                 curr_identity_hand.remove(card);
                 if(emptyhand(identity))
                 {
-                    System.out.println(identity + "HAS WON");
+                    try{
+                        FileWriter fwu=new FileWriter("C:\\Users\\Admin\\Desktop\\project_3.txt",true);
+                        fwu.write(identity + " HAS WON UNO CARDS GAME");
+                        fwu.close();
+                    }catch(Exception e)
+                    {
+                        System.out.println("Exception caught");
+                    }
+                    System.out.println(identity + " HAS WON");
 
                 }
                 curr_facename=card.getFaceName(card);
@@ -665,6 +701,7 @@ public class unocards implements Runnable {
 
 
             }
+
             System.out.println("THANKS FOR PLAYING");
             Thread.sleep(500);
 
@@ -678,6 +715,7 @@ public class unocards implements Runnable {
 
 
 }
+
 class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
