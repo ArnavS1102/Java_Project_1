@@ -92,7 +92,7 @@ public class TikTakToe  {
 
             m.marking(x, y);
             System.out.println(m.toString());
-            System.out.println("___________");
+            System.out.println("___________\n\n");
             m.AnnounceWin();
 
         }while(m.isBLANK);
