@@ -235,7 +235,7 @@ class snakeandladder implements Runnable { // snakeandladder thread
 }
 
 
-public class unocards implements Runnable { // thread of unocards
+public class unocards implements Runnable {
     Thread t;
     unocards()
     {
@@ -505,30 +505,34 @@ public class unocards implements Runnable { // thread of unocards
 
         public void final_draw(String id_player)
         {
-            if(is_player_turn(id_player))
+
+            if (deck.isEmpty()) {
+                deck.replace_deck_with(Buffer);
+                deck.shuffle(deck.cardno);
+                Buffer.add(deck.drawCard());
+            }
+
+
+
+
+            get_playerhand(id_player).add(deck.drawCard());
+            if(rotation==false)
             {
-                if(deck.isEmpty())
+                current_player=(current_player+1) % (player_indices.length);
+                if(current_player==players_playing)
                 {
-                    deck.replace_deck_with(Buffer);
-                    deck.shuffle(deck.cardno);
-                    Buffer.add(deck.drawCard());
-
-
-                }
-                get_playerhand(id_player).add(deck.drawCard());
-                if(rotation==false)
-                {
-                    current_player=(current_player+1) % (player_indices.length);
-                }
-                else if(rotation==true)
-                {
-                    current_player=(current_player-1) % (player_indices.length);
-                    if(current_player==-1)
-                    {
-                        current_player=(player_indices.length)-1;
-                    }
+                    current_player=0;
                 }
             }
+            else
+            {
+                current_player=(current_player-1) % (player_indices.length);
+                if(current_player==-1)
+                {
+                    current_player=(player_indices.length)-1;
+                }
+            }
+
 
 
         }
@@ -599,35 +603,46 @@ public class unocards implements Runnable { // thread of unocards
                 System.out.println(identity+" was skipped ");
                 if(rotation==false)
                 {
-                    current_player=(current_player+1)%player_indices.length;
-                    if(current_player==player_indices.length)
+                    current_player=(current_player+1) % (player_indices.length);
+                    if(current_player==players_playing)
                     {
                         current_player=0;
                     }
                 }
                 else
                 {
-                    current_player=(current_player-1)%player_indices.length;
+                    current_player=(current_player-1) % (player_indices.length);
                     if(current_player==-1)
                     {
-                        current_player=player_indices.length-1;
+                        current_player=(player_indices.length)-1;
                     }
                 }
             }
             if(card.getFaceName(card)=="Reverse")
             {
                 System.out.println("The game rotation has been reversed");
-                rotation^=true;
                 if(rotation==true)
                 {
-                    current_player=(current_player-2)%player_indices.length;
+                    rotation=false;
+                }
+                else
+                {
+                    rotation=true;
+                }
+                if(rotation==false)
+                {
+                    current_player=(current_player+1) % (player_indices.length);
+                    if(current_player==players_playing)
+                    {
+                        current_player=0;
+                    }
+                }
+                else
+                {
+                    current_player=(current_player-1) % (player_indices.length);
                     if(current_player==-1)
                     {
-                        current_player=player_indices.length-1;
-                    }
-                    if(current_player==-2)
-                    {
-                        current_player=player_indices.length-2;
+                        current_player=(player_indices.length)-1;
                     }
                 }
 
@@ -646,7 +661,7 @@ public class unocards implements Runnable { // thread of unocards
         }
 
     }
-    public void run() { // run method of unocards
+    public void run() {
         try {
             Scanner sc = new Scanner(System.in);
             Deck thedeck = new Deck();
@@ -712,8 +727,6 @@ public class unocards implements Runnable { // thread of unocards
             System.out.println("Exception caught: "+e);
         }
     }
-
-
 }
 public class TikTakToe implements Runnable {//TikTakToe thread
     Thread t;
