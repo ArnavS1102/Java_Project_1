@@ -21,7 +21,7 @@ class Mechanism {
         player = -player;
     }
 
-    public boolean isWin(int player) {
+    public boolean Won(int player) {
         return ((grid[0][0] + grid[0][1] + grid[0][2] == player * 3) ||
                 (grid[1][0] + grid[1][1] + grid[1][2] == player * 3) ||
                 (grid[2][0] + grid[2][1] + grid[2][2] == player * 3) ||
@@ -33,10 +33,10 @@ class Mechanism {
     }
 
     public void AnnounceWin() {
-        if (isWin(X)) {
+        if (Won(X)) {
             System.out.println("\n X won...!!");
             isBLANK = false;
-        } else if (isWin(O)) {
+        } else if (Won(O)) {
             System.out.println("\n O won...!!");
             isBLANK = false;
         } else {
