@@ -715,20 +715,151 @@ public class unocards implements Runnable { // thread of unocards
 
 
 }
+public class TikTakToe implements Runnable {//TikTakToe thread
+    Thread t;
 
-class Main { 
+    TikTakToe() {
+        t = new Thread(this, "TikTakToe thread");
+        System.out.println("TikTakToe game created");
+    }
+    class Mechanism {
+        public static final int X = 1, O = -1;
+        public static final int BLANK = 0;
+
+        public int player = X;
+        private int[][] grid = new int[3][3];
+        public boolean isBLANK = false;
+
+        public void marking(int x, int y) {
+            if (x < 0 || x > 2 || y < 0 || y > 2) {
+                System.out.println("Entered Position does not Exist!");
+                return;
+            }
+            if (grid[x][y] != BLANK) {
+                System.out.println("Entered position already occupied!");
+                return;
+            }
+            grid[x][y] = player;
+            player = -player;
+        }
+
+        public boolean Won(int player) {
+            return ((grid[0][0] + grid[0][1] + grid[0][2] == player * 3) ||
+                    (grid[1][0] + grid[1][1] + grid[1][2] == player * 3) ||
+                    (grid[2][0] + grid[2][1] + grid[2][2] == player * 3) ||
+                    (grid[0][0] + grid[1][0] + grid[2][0] == player * 3) ||
+                    (grid[0][1] + grid[1][1] + grid[2][1] == player * 3) ||
+                    (grid[0][2] + grid[1][2] + grid[2][2] == player * 3) ||
+                    (grid[0][0] + grid[1][1] + grid[2][2] == player * 3) ||
+                    (grid[2][0] + grid[1][1] + grid[0][2] == player * 3));
+        }
+
+        public void AnnounceWin() {
+            if (Won(X)) {
+                try{
+                    FileWriter fwt=new FileWriter("C:\\Users\\Admin\\Desktop\\project_3.txt",true);
+                    fwt.write( " X HAS WON TikTakToe GAME");//result of TikTakToe written to a file
+                    fwt.close();
+                }catch(Exception e)
+                {
+                    System.out.println("Exception caught");
+                }
+                System.out.println("\n X won...!!");
+                isBLANK = false;
+            } else if (Won(O)) {
+                try{
+                    FileWriter fwt=new FileWriter("C:\\Users\\Admin\\Desktop\\project_3.txt",true);
+                    fwt.write( " O HAS WON TikTakToe GAME");//reuslt of TikTakToe written to a file
+                    fwt.close();
+                }catch(Exception e)
+                {
+                    System.out.println("Exception caught");
+                }
+                System.out.println("\n O won...!!");
+                isBLANK = false;
+            } else {
+                if (!isBLANK) {
+                    System.out.println("DRAW.. Try Again!");
+                }
+
+            }
+        }
+
+        public String toString() {
+            StringBuilder s = new StringBuilder();
+            isBLANK = false;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    switch (grid[i][j]) {
+                        case X:
+                            s.append(" X ");
+                            break;
+                        case O:
+                            s.append(" O ");
+                            break;
+                        case BLANK:
+                            s.append("   ");
+                            isBLANK = true;
+                            break;
+                    }
+                    if (j < 2) {
+                        s.append("|");
+                    }
+
+                }
+                if (i < 2) {
+                    s.append("\n-----------\n");
+                }
+            }
+            return s.toString();
+        }
+    }
+    public void run()// run method of TikTakToe
+    {
+        try {
+            Mechanism m = new Mechanism();
+            Scanner s = new Scanner(System.in);
+            int x = 0, y = 0;
+            do {
+                System.out.println(m.player == m.X ? "X's Turn" : "O's Turn");
+                System.out.println("Enter X and Y Coordinates [0,1,2]");
+                x = s.nextInt();
+                y = s.nextInt();
+
+                m.marking(x, y);
+                System.out.println(m.toString());
+                System.out.println("___________\n\n");
+                m.AnnounceWin();
+
+            } while (m.isBLANK);
+            Thread.sleep(500);
+        }
+        catch(Exception e)
+        {
+            System.out.println("Exception caught: "+e);
+        }
+    }
+
+}
+class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         snakeandladder sl = new snakeandladder();
         unocards uc = new unocards();
+        TikTakToe ttt=new TikTakToe();
         System.out.println("Enter 1 if you want to play snake and ladder");
         System.out.println("Enter 2 if you want to play uno cards");
+        System.out.println("Enter 3 if you want to play TikTakToe");
         int choice = sc.nextInt();
         if (choice == 1) {
             sl.t.start();
         } else if (choice == 2) {
             uc.t.start();
-        } else {
+        } else if(choice==3)
+        {
+            ttt.t.start();
+        }
+        else {
             System.out.println("Invalid entry");
         }
         try {
@@ -742,3 +873,4 @@ class Main {
 
     }
 }
+
